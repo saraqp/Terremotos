@@ -2,14 +2,14 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="58dp"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:padding="8dp">
     <TextView
         android:id="@+id/magnitud"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.08"
+        android:layout_weight="0.07"
         android:text="8.7"
         android:layout_gravity="center_vertical"
         android:background="@drawable/magnitude_circle"
@@ -19,7 +19,7 @@
         android:textSize="16sp"/>
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="0.32"
         android:orientation="vertical"
         android:paddingLeft="8dp">
