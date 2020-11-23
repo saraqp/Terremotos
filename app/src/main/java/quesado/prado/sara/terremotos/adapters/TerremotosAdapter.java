@@ -123,7 +123,7 @@ public class TerremotosAdapter extends ArrayAdapter<Terremoto> {
     }
 
     private String formatearFecha(long fechaenMilisegundos) {
-        SimpleDateFormat dateFormat=new SimpleDateFormat("MMM DD,yyyy", Locale.getDefault());
+        SimpleDateFormat dateFormat=new SimpleDateFormat("MMM dd,yyyy", Locale.getDefault());
         return dateFormat.format(fechaenMilisegundos);
     }
     private String formatearHora(long fechaenMilisegundos){

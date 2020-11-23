@@ -20,7 +20,15 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -39,42 +47,71 @@ public class MainActivity extends AppCompatActivity {
             "https://earthquake.usgs.gov/fdsnws/event/1/query";
     TerremotosAdapter adapter;
     Uri.Builder uriBuilder;
+    TextView empty;
+    ArrayList<Terremoto> terremotos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         terremotosLisview=findViewById(R.id.lista);
+        empty=findViewById(R.id.empty);
         connectivityManager= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         activeNetWork=connectivityManager.getActiveNetworkInfo();
-        terremotosLisview.setEmptyView(findViewById(R.id.empty));
+        terremotosLisview.setEmptyView(empty);
 
 
-
-
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String minMagnitude = sharedPrefs.getString(
-                getString(R.string.settings_min_magnitude_key),
-                getString(R.string.settings_min_magnitude_default));
-        Uri baseUri = Uri.parse(SAMPLE_JSON_RESPONSE);
-        uriBuilder = baseUri.buildUpon();
-
-        uriBuilder.appendQueryParameter("format", "geojson");
-        uriBuilder.appendQueryParameter("limit", "10");
-        uriBuilder.appendQueryParameter("minmag", minMagnitude);
-        uriBuilder.appendQueryParameter("orderby", "time");
-
+        terremotos=new ArrayList<>();
         boolean isConnected= activeNetWork!=null &&activeNetWork.isConnected();
 
         if (isConnected){
-            GetTerremotosAsynTask asynTask=new GetTerremotosAsynTask();
-            asynTask.execute();
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+            String minMagnitude = sharedPrefs.getString(
+                    getString(R.string.settings_min_magnitude_key),
+                    getString(R.string.settings_min_magnitude_default));
+            String orderby=sharedPrefs.getString(
+                    getString(R.string.settings_order_by_key),
+                    getString(R.string.settings_order_by_default));
+
+            Uri baseUri = Uri.parse(SAMPLE_JSON_RESPONSE);
+            uriBuilder = baseUri.buildUpon();
+
+            uriBuilder.appendQueryParameter("format", "geojson");
+            uriBuilder.appendQueryParameter("limit", "20");
+            uriBuilder.appendQueryParameter("minmag", minMagnitude);
+            uriBuilder.appendQueryParameter("orderby", orderby);
+
+            SAMPLE_JSON_RESPONSE=uriBuilder.toString();
+            //GetTerremotosAsynTask asynTask=new GetTerremotosAsynTask();
+            //asynTask.execute();
+            updateUi(terremotos);
+            RequestQueue requestQueue= Volley.newRequestQueue(this);
+            StringRequest request=new StringRequest(Request.Method.GET, SAMPLE_JSON_RESPONSE, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    terremotos=QueryUtils.extraerTerremotos(response);
+                    ProgressBar progressBar=findViewById(R.id.progressBar);
+                    progressBar.setVisibility(View.GONE);
+                    empty.setText("No ha ocurrido ningún terremoto");
+
+                    adapter.clear();
+                    if (terremotos!=null){
+                        adapter.addAll(terremotos);
+
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d("REQUEST", "error al obtener terremotos");
+                }
+            });
+            requestQueue.add(request);
         }else {
             progressBar=findViewById(R.id.progressBar);
             progressBar.setVisibility(View.GONE);
+            empty.setText("No ha ocurrido ningún terremoto");
 
         }
-        SAMPLE_JSON_RESPONSE=uriBuilder.toString();
-
         //terremotos=QueryUtils.extraerTerremotos(SAMPLE_JSON_RESPONSE);
 
 
@@ -112,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    /*
     class GetTerremotosAsynTask extends AsyncTask<URL,Void,ArrayList<Terremoto>>{
 
         @Override
@@ -148,6 +186,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
+*/
 
 }
