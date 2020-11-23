@@ -22,11 +22,6 @@ import quesado.prado.sara.terremotos.model.Terremoto;
 public class QueryUtils {
     private QueryUtils(){}
     public static ArrayList<Terremoto> extraerTerremotos(String sample_json_response){
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         ArrayList<Terremoto> terremotos=new ArrayList<>();
         try{
             JSONObject root=new JSONObject(sample_json_response);
