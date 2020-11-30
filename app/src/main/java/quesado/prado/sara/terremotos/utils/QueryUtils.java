@@ -33,7 +33,11 @@ public class QueryUtils {
                 String localizacionInicial=properties.getString("place");
                 String url=properties.getString("url");
                 long fecha=properties.getLong("time");
-                terremotos.add(new Terremoto(magnitud,localizacionInicial,fecha,url));
+                JSONObject geometry=object.getJSONObject("geometry");
+                JSONArray coordenadas=geometry.getJSONArray("coordinates");
+                double latitud=coordenadas.getDouble(1);
+                double longitud=coordenadas.getDouble(0);
+                terremotos.add(new Terremoto(magnitud,localizacionInicial,fecha,url,latitud,longitud));
             }
 
         }catch (JSONException e){

@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
     TextView empty;
     ArrayList<Terremoto> terremotos;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,10 +89,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent settingsIntent = new Intent(this, SettingsActivity.class);
-            startActivity(settingsIntent);
-            return true;
+        switch (id){
+            case R.id.action_settings:
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
+            case R.id.action_map:
+                Intent mapIntent=new Intent(this,MapsActivity2.class);
+                mapIntent.putExtra("terremotos",terremotos);
+                startActivity(mapIntent);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -103,8 +111,9 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Terremoto terremoto=terremotos.get(position);
                 String url=terremoto.getUrl();
-                Intent intent=new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(url));
+                Intent intent=new Intent(MainActivity.this,MapsActivity.class);
+                //para mandar un objeto por intent tienes que implementarle serializable
+                intent.putExtra("terremoto",terremoto);
                 startActivity(intent);
             }
         });

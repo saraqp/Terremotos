@@ -16,5 +16,7 @@
 
     <string name="settings_order_by_most_recent_label">Mas Reciente</string>
     <string name="settings_order_by_most_recent_value" translatable="false">time</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps2">Map</string>
 
 </resources>

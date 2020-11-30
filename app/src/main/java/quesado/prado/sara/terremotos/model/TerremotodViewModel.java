@@ -30,10 +30,13 @@ public class TerremotodViewModel extends AndroidViewModel {
     private static MutableLiveData<List<Terremoto>> terremotos;
     private Application application;//el contexto
     private static String SAMPLE_JSON_RESPONSE ="https://earthquake.usgs.gov/fdsnws/event/1/query";
-
+    private SharedPreferences sharedPrefs;
+    private SharedPreferences.OnSharedPreferenceChangeListener listener;
     public TerremotodViewModel(@NonNull Application application) {
         super(application);
         this.application = application;
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(application);
+        sharedPreferencesListener();
     }
 
     public LiveData<List<Terremoto>> obtenerTerremotos(){
@@ -43,9 +46,18 @@ public class TerremotodViewModel extends AndroidViewModel {
         }
         return terremotos;
     }
+    //el shared preferences llama  al viewmodel cada vez que cambia
+    private void sharedPreferencesListener() {
+        listener=new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                cargarTerremotos();
+            }
+        };
+        sharedPrefs.registerOnSharedPreferenceChangeListener(listener);
+    }
 
     private void cargarTerremotos() {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(application);
         String minMagnitude = sharedPrefs.getString(
                 application.getString(R.string.settings_min_magnitude_key),
                 application.getString(R.string.settings_min_magnitude_default));
